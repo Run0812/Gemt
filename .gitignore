@@ -1,0 +1,6 @@
+env
+.temp
+*.pyo
+*.pyc
+__pycache__
+.vscode
