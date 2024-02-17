@@ -32,13 +32,13 @@ def run(root_path: Path):
     for name, path in walker.excels.items():
         excel = OpenpyxlUtil(path.absolute(), use_xlrd=path.suffix==".xls")
         for cell in excel.get_sheet_by_index(0).header:
-            header_items[cell] = 0
+            header_items[format_header(cell)] = 0
     date_pattern = re.compile("\d+")
     data = [["日期"] + list(header_items.keys())]
     for name, path in walker.excels.items():
         excel = OpenpyxlUtil(path.absolute(), use_xlrd=path.suffix==".xls")
         sheet = excel.get_sheet_by_index(0)
-        header = sheet.header
+        header = [format_header(item) for item in sheet.header]
         line = {"date": "-".join(date_pattern.findall(name))}
         for row in sheet.iter_rows(2):
             line.update(dict.fromkeys(header_items.keys(), ""))
@@ -54,6 +54,10 @@ def run(root_path: Path):
         save_path.unlink()
     summary_book.save(save_path)
     print("已完成, 结果保存到 %s" % save_path)
+
+
+def format_header(header: str) -> str:
+    return " ".join([word.capitalize() for word in header.split(" ")])
 
 
 
